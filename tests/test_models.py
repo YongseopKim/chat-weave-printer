@@ -40,6 +40,7 @@ def test_platform_display_names():
     assert get_platform_display_name("claude") == "Claude"
     assert get_platform_display_name("chatgpt") == "ChatGPT"
     assert get_platform_display_name("gemini") == "Gemini"
+    assert get_platform_display_name("grok") == "Grok"
 
 
 def test_conversation_ir_parsing():
