@@ -100,5 +100,6 @@ def test_format_conversation_basic():
     assert "# [Claude](https://claude.ai/chat/test-123)" in result
     assert "## USER 질문" not in result  # User input should be excluded
     assert "Hello" not in result  # User content should be excluded
+    assert "## LLM 응답 1" in result  # LLM response header should be present
     assert "Hi there!" in result  # Assistant content should be present
     assert "---" in result

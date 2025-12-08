@@ -74,10 +74,14 @@ def format_conversation_to_markdown(conversation: ConversationIR) -> str:
     output_lines.append("")
 
     # Output only assistant messages
+    response_num = 0
     for msg in conversation.messages:
         if msg.role == "assistant":
+            response_num += 1
             output_lines.append("---")
             output_lines.append("---")
+            output_lines.append("")
+            output_lines.append(f"## LLM 응답 {response_num}")
             output_lines.append("")
             output_lines.append(format_message_content(msg))
             output_lines.append("")
