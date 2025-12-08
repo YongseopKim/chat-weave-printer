@@ -73,40 +73,13 @@ def format_conversation_to_markdown(conversation: ConversationIR) -> str:
     output_lines.append(f"# [{platform_name}]({url})")
     output_lines.append("")
 
-    # Group messages into user-assistant pairs
-    i = 0
-    while i < len(conversation.messages):
-        msg = conversation.messages[i]
-
-        # Add separator
-        output_lines.append("---")
-        output_lines.append("---")
-        output_lines.append("")
-
-        if msg.role == "user":
-            # User message
-            output_lines.append("## USER 질문")
+    # Output only assistant messages
+    for msg in conversation.messages:
+        if msg.role == "assistant":
+            output_lines.append("---")
+            output_lines.append("---")
             output_lines.append("")
             output_lines.append(format_message_content(msg))
             output_lines.append("")
-
-            # Check for assistant response
-            if i + 1 < len(conversation.messages):
-                next_msg = conversation.messages[i + 1]
-                if next_msg.role == "assistant":
-                    output_lines.append("## LLM 응답")
-                    output_lines.append("")
-                    output_lines.append(format_message_content(next_msg))
-                    output_lines.append("")
-                    i += 2
-                    continue
-        elif msg.role == "assistant":
-            # Standalone assistant message (rare case)
-            output_lines.append("## LLM 응답")
-            output_lines.append("")
-            output_lines.append(format_message_content(msg))
-            output_lines.append("")
-
-        i += 1
 
     return "\n".join(output_lines)

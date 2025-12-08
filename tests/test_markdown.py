@@ -98,8 +98,7 @@ def test_format_conversation_basic():
 
     # Check structure
     assert "# [Claude](https://claude.ai/chat/test-123)" in result
-    assert "## USER 질문" in result
-    assert "## LLM 응답" in result
-    assert "Hello" in result
-    assert "Hi there!" in result
+    assert "## USER 질문" not in result  # User input should be excluded
+    assert "Hello" not in result  # User content should be excluded
+    assert "Hi there!" in result  # Assistant content should be present
     assert "---" in result
