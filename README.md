@@ -1,68 +1,93 @@
 # chat-weave-printer
 
-ConversationIR(JSON)을 읽기 쉬운 Markdown 포맷으로 변환하는 CLI 도구입니다.
+A CLI tool that converts ConversationIR (JSON) to readable Markdown format.
 
-## 개요
+## Overview
 
-chat-weave의 ConversationIR 포맷(JSON)을 읽어서 가독성 높은 Markdown 문서로 변환합니다.
+Reads chat-weave's ConversationIR format (JSON) and converts it to highly readable Markdown documents. Only LLM responses are included in the output, with user inputs excluded.
 
-### 지원 플랫폼
+### Supported Platforms
 - Claude
 - ChatGPT
 - Gemini
+- Grok
 
-### 주요 기능
-- ConversationIR v1 스키마 완벽 지원
-- Markdown heading 레벨 자동 조정 (LLM 응답의 `##` → `###`)
-- 빈 메시지 자동 표시 ("(빈 질문)" / "(빈 응답)")
-- 플랫폼 이름 자동 포맷팅 (claude → Claude)
-- normalized_content 우선 사용, 없으면 raw_content 사용
+### Key Features
+- Full support for ConversationIR v1 schema
+- Automatic Markdown heading level adjustment (LLM response's `##` → `###`)
+- Automatic empty message display ("(empty question)" / "(empty response)")
+- Automatic platform name formatting (claude → Claude)
+- Prioritizes normalized_content, falls back to raw_content
+- Numbered LLM response headers (## LLM Response 1, 2, ...)
+- Platform-based output filename convention (chatgpt-xxx.json → chatgpt.md)
+- Batch conversion script for multiple files
 
-### 향후 지원 예정
-- PDF 출력
-- HTML 출력
+### Future Support Planned
+- PDF output
+- HTML output
 
-## 설치
+## Installation
 
-### 사용자 설치
+### User Installation
 ```bash
 pip install -e .
 ```
 
-### 개발자 설치
+### Developer Installation
 ```bash
-# 가상환경 생성 및 활성화
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 개발 의존성 포함 설치
+# Install with development dependencies
 pip install -e ".[dev]"
 ```
 
-## 사용법
+## Usage
 
-### 기본 사용
-입력 파일명에서 확장자를 `.md`로 변경하여 자동 생성:
+### Basic Usage
+Automatically generates output by changing the input filename extension to `.md`:
 
 ```bash
 cwprint conversation.json
-# → conversation.md 생성
+# → conversation.md created
 ```
 
-### 출력 파일 지정
+#### Platform-based Filename Convention
+When the input filename starts with a platform name, the output uses just the platform name:
+
+```bash
+cwprint chatgpt-2024-01-15.json
+# → chatgpt.md created
+
+cwprint claude-conversation.json
+# → claude.md created
+```
+
+### Specify Output File
 
 ```bash
 cwprint conversation.json -o output.md
 ```
 
-### stdout 출력 (파이프 사용)
+### stdout Output (for piping)
 
 ```bash
 cwprint conversation.json --stdout
 cwprint conversation.json --stdout | less
 ```
 
-## Markdown 출력 포맷
+### Batch Conversion
+
+Convert multiple ConversationIR files at once using the batch script:
+
+```bash
+python scripts/batch_convert.py -d ~/Downloads
+```
+
+This processes all directories containing `ir/conversation-ir/*.json` files and creates markdown files in a `md/` subdirectory.
+
+## Markdown Output Format
 
 ```markdown
 # [Claude](https://claude.ai/chat/xxx)
@@ -70,74 +95,73 @@ cwprint conversation.json --stdout | less
 ---
 ---
 
-## USER 질문
+## LLM Response 1
 
-사용자의 질문 내용
+LLM's response content
 
-## LLM 응답
+### Original ## heading
+(automatically incremented one level)
 
-LLM의 응답 내용
-
-### 원본이 ## 였던 heading
-(자동으로 한 단계 증가)
-
-#### 원본이 ### 였던 heading
-(자동으로 한 단계 증가)
+#### Original ### heading
+(automatically incremented one level)
 
 ---
 ---
 
-## USER 질문
+## LLM Response 2
 
-다음 질문...
+Next response...
 ```
 
-## 개발
+## Development
 
-### 테스트 실행
+### Running Tests
 
 ```bash
-# 전체 테스트
+# All tests
 pytest
 
-# verbose 모드
+# Verbose mode
 pytest -v
 
-# 커버리지 포함
+# With coverage
 pytest --cov=chatweave_printer
 ```
 
-### 코드 검증
+### Code Validation
 
 ```bash
-# 문법 체크
+# Syntax check
 python -m py_compile chatweave_printer/*.py
 ```
 
-## 요구사항
+## Requirements
 
 - Python 3.10+
 - pydantic >= 2.0
 - click >= 8.0
 
-## 프로젝트 구조
+## Project Structure
 
 ```
 chat-weave-printer/
 ├── chatweave_printer/
 │   ├── __init__.py
-│   ├── models.py           # Pydantic 모델 (ConversationIR, MessageIR)
-│   ├── cli.py              # CLI 진입점
+│   ├── models.py           # Pydantic models (ConversationIR, MessageIR)
+│   ├── cli.py              # CLI entry point
 │   └── formatters/
 │       ├── __init__.py
-│       └── markdown.py     # Markdown 변환 로직
+│       └── markdown.py     # Markdown conversion logic
+├── scripts/
+│   └── batch_convert.py    # Batch conversion script
 ├── tests/
-│   ├── test_models.py      # 모델 테스트
-│   └── test_markdown.py    # 변환 로직 테스트
+│   ├── test_models.py      # Model tests
+│   ├── test_cli.py         # CLI tests
+│   └── test_markdown.py    # Conversion logic tests
 ├── pyproject.toml
 └── README.md
 ```
 
-## 라이선스
+## License
 
 MIT

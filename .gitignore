@@ -149,4 +149,5 @@ Thumbs.db
 # Test output
 *.md
 !README.md
+!README.ko.md
 !CLAUDE.md
