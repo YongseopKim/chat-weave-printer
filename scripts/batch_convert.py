@@ -11,11 +11,44 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
+from typing import Dict
+
+# Supported platforms for naming convention
+PLATFORMS = ["chatgpt", "claude", "grok", "gemini"]
 
 # Determine CLI path from this script's location
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 CLI_PATH = REPO_ROOT / "chatweave_printer" / "cli.py"
+
+
+def get_base_output_name(json_file: Path) -> str:
+    """입력 파일명을 기반으로 출력 파일 기본 이름 결정.
+
+    플랫폼 이름(chatgpt, claude, grok, gemini)으로 시작하면 플랫폼명 반환.
+    그 외에는 원본 파일명(확장자 제외) 반환.
+    """
+    stem = json_file.stem.lower()
+
+    for platform in PLATFORMS:
+        if stem.startswith(platform):
+            return platform
+
+    return json_file.stem
+
+
+def get_unique_output_path(md_dir: Path, base_name: str, used_names: Dict[str, int]) -> Path:
+    """충돌 시 번호를 추가하여 고유한 파일명 반환.
+
+    첫 번째 파일: {base_name}.md
+    두 번째 이후: {base_name}-2.md, {base_name}-3.md, ...
+    """
+    if base_name not in used_names:
+        used_names[base_name] = 1
+        return md_dir / f"{base_name}.md"
+    else:
+        used_names[base_name] += 1
+        return md_dir / f"{base_name}-{used_names[base_name]}.md"
 
 
 def main():
@@ -66,9 +99,13 @@ def main():
         print(f"\nProcessing: {dir_path.name}")
         print(f"  Found {len(json_files)} JSON file(s)")
 
+        # Track used names for collision handling within this directory
+        used_names: Dict[str, int] = {}
+
         for json_file in json_files:
             total_processed += 1
-            output_file = md_dir / f"{json_file.stem}.md"
+            base_name = get_base_output_name(json_file)
+            output_file = get_unique_output_path(md_dir, base_name, used_names)
 
             try:
                 result = subprocess.run(

@@ -11,6 +11,25 @@ from chatweave_printer.models import ConversationIR
 from chatweave_printer.formatters.markdown import format_conversation_to_markdown
 
 
+PLATFORMS = ["chatgpt", "claude", "grok", "gemini"]
+
+
+def determine_output_filename(input_file: Path) -> Path:
+    """입력 파일명을 기반으로 출력 파일명 결정.
+
+    플랫폼 이름(chatgpt, claude, grok, gemini)으로 시작하면 {platform}.md로 변환.
+    그 외에는 기존 방식대로 확장자만 .md로 변경.
+    """
+    stem = input_file.stem.lower()
+
+    for platform in PLATFORMS:
+        if stem.startswith(platform):
+            return input_file.parent / f"{platform}.md"
+
+    # 플랫폼으로 시작하지 않으면 기존 방식
+    return input_file.with_suffix('.md')
+
+
 @click.command()
 @click.argument('input_file', type=click.Path(exists=True, path_type=Path))
 @click.option('-o', '--output', type=click.Path(path_type=Path), help='Output file path')
@@ -41,8 +60,8 @@ def main(input_file: Path, output: Optional[Path], stdout: bool):
             if output:
                 output_file = output
             else:
-                # Default: replace .json extension with .md
-                output_file = input_file.with_suffix('.md')
+                # Default: use platform-based naming rule
+                output_file = determine_output_filename(input_file)
 
             # Write to file
             with open(output_file, 'w', encoding='utf-8') as f:
