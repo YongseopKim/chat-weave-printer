@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from chatweave_printer.models import ConversationIR, MessageIR
+from chatweave_printer.models import ArtifactIR, ConversationIR, MessageIR
 from chatweave_printer.formatters.markdown import (
     adjust_heading_level,
     format_message_content,
@@ -103,3 +103,101 @@ def test_format_conversation_basic():
     assert "## LLM 응답 1" in result  # LLM response header should be present
     assert "Hi there!" in result  # Assistant content should be present
     assert "---" in result
+
+
+def test_format_conversation_with_artifacts():
+    """Test conversation formatting with artifacts."""
+    conv = ConversationIR(
+        schema="conversation-ir/v1",
+        platform="claude",
+        conversation_id="test-art",
+        meta={"url": "https://claude.ai/chat/test-art"},
+        messages=[
+            MessageIR(
+                id="m0000",
+                index=0,
+                role="user",
+                timestamp=datetime.now(),
+                raw_content="Build it",
+                normalized_content="Build it",
+            ),
+            MessageIR(
+                id="m0001",
+                index=1,
+                role="assistant",
+                timestamp=datetime.now(),
+                raw_content="Done",
+                normalized_content="Done",
+            ),
+        ],
+        artifacts=[
+            ArtifactIR(
+                id="a0000",
+                title="My Framework",
+                version="v3",
+                content="## Overview\n\nCode here",
+            ),
+        ],
+    )
+
+    result = format_conversation_to_markdown(conv)
+
+    # Assistant message should be present
+    assert "## LLM 응답 1" in result
+    assert "Done" in result
+
+    # Artifact section should appear after messages
+    assert "## Artifact: My Framework (v3)" in result
+    # Heading in artifact content should be incremented
+    assert "### Overview" in result
+    assert "Code here" in result
+
+
+def test_format_conversation_artifact_without_version():
+    """Test artifact rendering when version is None."""
+    conv = ConversationIR(
+        schema="conversation-ir/v1",
+        platform="claude",
+        conversation_id="test-nv",
+        meta={"url": "https://claude.ai/chat/test-nv"},
+        messages=[],
+        artifacts=[
+            ArtifactIR(
+                id="a0000",
+                title="Simple Snippet",
+                content="print('hello')",
+            ),
+        ],
+    )
+
+    result = format_conversation_to_markdown(conv)
+
+    assert "## Artifact: Simple Snippet" in result
+    assert "(None)" not in result
+    assert "print('hello')" in result
+
+
+def test_format_conversation_empty_artifacts():
+    """Test that empty artifacts list produces no artifact section."""
+    conv = ConversationIR(
+        schema="conversation-ir/v1",
+        platform="chatgpt",
+        conversation_id="test-empty",
+        meta={"url": "https://chatgpt.com/c/test-empty"},
+        messages=[
+            MessageIR(
+                id="m0000",
+                index=0,
+                role="assistant",
+                timestamp=datetime.now(),
+                raw_content="Response",
+                normalized_content="Response",
+            ),
+        ],
+        artifacts=[],
+    )
+
+    result = format_conversation_to_markdown(conv)
+
+    assert "Artifact:" not in result
+    assert "## LLM 응답 1" in result

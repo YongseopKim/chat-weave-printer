@@ -86,4 +86,18 @@ def format_conversation_to_markdown(conversation: ConversationIR) -> str:
             output_lines.append(format_message_content(msg))
             output_lines.append("")
 
+    # Output artifacts
+    for artifact in conversation.artifacts:
+        output_lines.append("---")
+        output_lines.append("---")
+        output_lines.append("")
+        if artifact.version:
+            output_lines.append(f"## Artifact: {artifact.title} ({artifact.version})")
+        else:
+            output_lines.append(f"## Artifact: {artifact.title}")
+        output_lines.append("")
+        if artifact.content.strip():
+            output_lines.append(adjust_heading_level(artifact.content, increment=1))
+        output_lines.append("")
+
     return "\n".join(output_lines)

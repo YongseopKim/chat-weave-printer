@@ -87,9 +87,8 @@ def main():
         if not ir_dir.exists():
             continue
 
-        # Create md/ directory
-        md_dir = dir_path / "md"
-        md_dir.mkdir(parents=True, exist_ok=True)
+        # 세션 디렉토리에 직접 출력
+        md_dir = dir_path
 
         # Process all JSON files
         json_files = list(ir_dir.glob("*.json"))

@@ -30,6 +30,16 @@ class MessageIR(BaseModel):
         return self.raw_content
 
 
+class ArtifactIR(BaseModel):
+    """Artifact attached to a conversation."""
+
+    id: str
+    title: str
+    version: Optional[str] = None
+    content: str = ""
+    meta: Dict[str, Any] = Field(default_factory=dict)
+
+
 class ConversationIR(BaseModel):
     """ConversationIR schema."""
 
@@ -40,6 +50,7 @@ class ConversationIR(BaseModel):
     conversation_id: str
     meta: Dict[str, Any]
     messages: List[MessageIR]
+    artifacts: List[ArtifactIR] = Field(default_factory=list)
 
 
 # Platform name mapping
