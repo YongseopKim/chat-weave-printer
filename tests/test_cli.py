@@ -52,5 +52,5 @@ class TestDetermineOutputFilename:
 
     def test_platforms_constant(self):
         """PLATFORMS 상수에 모든 플랫폼이 포함되어 있는지 확인."""
-        expected = {"chatgpt", "claude", "grok", "gemini"}
+        expected = {"chatgpt", "claude", "grok", "gemini", "perplexity"}
         assert set(PLATFORMS) == expected

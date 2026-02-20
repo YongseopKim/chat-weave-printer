@@ -11,7 +11,7 @@ from chatweave_printer.models import ConversationIR
 from chatweave_printer.formatters.markdown import format_conversation_to_markdown
 
 
-PLATFORMS = ["chatgpt", "claude", "grok", "gemini"]
+PLATFORMS = ["chatgpt", "claude", "grok", "gemini", "perplexity"]
 
 
 def determine_output_filename(input_file: Path) -> Path:

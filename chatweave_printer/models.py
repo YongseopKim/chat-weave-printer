@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 Role = Literal["user", "assistant"]
-Platform = Literal["claude", "chatgpt", "gemini", "grok"]
+Platform = Literal["claude", "chatgpt", "gemini", "grok", "perplexity"]
 
 
 class MessageIR(BaseModel):
@@ -59,6 +59,7 @@ PLATFORM_NAMES = {
     "chatgpt": "ChatGPT",
     "gemini": "Gemini",
     "grok": "Grok",
+    "perplexity": "Perplexity",
 }
 
 

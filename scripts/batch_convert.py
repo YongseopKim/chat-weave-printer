@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Dict
 
 # Supported platforms for naming convention
-PLATFORMS = ["chatgpt", "claude", "grok", "gemini"]
+PLATFORMS = ["chatgpt", "claude", "grok", "gemini", "perplexity"]
 
 # Determine CLI path from this script's location
 SCRIPT_DIR = Path(__file__).resolve().parent
